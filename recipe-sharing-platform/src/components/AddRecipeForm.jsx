@@ -1,108 +1,128 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-function AddRecipeForm() {
+const AddRecipeForm = () => {
   const [title, setTitle] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!title.trim()) newErrors.title = "Title is required.";
+    if (!ingredients.trim()) {
+      newErrors.ingredients = "Ingredients are required.";
+    } else {
+      const ingredientsArray = ingredients
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item);
+      if (ingredientsArray.length < 2) {
+        newErrors.ingredients = "At least two ingredients are required.";
+      }
+    }
+    if (!steps.trim()) newErrors.steps = "Preparation steps are required.";
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0; // return true if no errors
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title || !ingredients || !steps) {
-      setError("All fields are required!");
-      return;
+
+    if (validateForm()) {
+      const newRecipe = {
+        title,
+        ingredients: ingredients.split(",").map((item) => item.trim()),
+        steps,
+      };
+      console.log("Recipe submitted:", newRecipe);
+
+      // Clear form fields after successful submission
+      setTitle("");
+      setIngredients("");
+      setSteps("");
+      setErrors({});
     }
-
-    // Split ingredients and steps into arrays (just for example)
-    const ingredientsList = ingredients.split("\n");
-    const stepsList = steps.split("\n");
-
-    // Example to simulate adding the recipe (In a real app, this would send the data to the backend)
-    const newRecipe = {
-      title,
-      ingredients: ingredientsList,
-      steps: stepsList,
-    };
-
-    console.log("New Recipe:", newRecipe);
-
-    // Reset form
-    setTitle("");
-    setIngredients("");
-    setSteps("");
-    setError("");
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Add a New Recipe</h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md"
-      >
-        <div className="mb-4">
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center">Add New Recipe</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title Input */}
+        <div>
           <label
+            className="block text-gray-700 font-semibold mb-2"
             htmlFor="title"
-            className="block text-sm font-semibold text-gray-700"
           >
             Recipe Title
           </label>
           <input
-            type="text"
             id="title"
+            type="text"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter the recipe title"
           />
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+          )}
         </div>
 
-        <div className="mb-4">
+        {/* Ingredients Textarea */}
+        <div>
           <label
+            className="block text-gray-700 font-semibold mb-2"
             htmlFor="ingredients"
-            className="block text-sm font-semibold text-gray-700"
           >
-            Ingredients (one per line)
+            Ingredients (separate with commas)
           </label>
           <textarea
             id="ingredients"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows="4"
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
-            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter ingredients, one per line"
-            rows="5"
-          />
+          ></textarea>
+          {errors.ingredients && (
+            <p className="text-red-500 text-sm mt-1">{errors.ingredients}</p>
+          )}
         </div>
 
-        <div className="mb-4">
+        {/* Steps Textarea */}
+        <div>
           <label
+            className="block text-gray-700 font-semibold mb-2"
             htmlFor="steps"
-            className="block text-sm font-semibold text-gray-700"
           >
-            Preparation Steps (one per line)
+            Preparation Steps
           </label>
           <textarea
             id="steps"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows="6"
             value={steps}
             onChange={(e) => setSteps(e.target.value)}
-            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter preparation steps, one per line"
-            rows="5"
-          />
+          ></textarea>
+          {errors.steps && (
+            <p className="text-red-500 text-sm mt-1">{errors.steps}</p>
+          )}
         </div>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-        <button
-          type="submit"
-          className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Add Recipe
-        </button>
+        {/* Submit Button */}
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-md transition-colors duration-300"
+          >
+            Add Recipe
+          </button>
+        </div>
       </form>
     </div>
   );
-}
+};
 
 export default AddRecipeForm;
