@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRecipeStore } from "./recipeStore";
+import useRecipeStore from "../stores/recipeStore"; // Correct path
 
 const AddRecipeForm = () => {
   const addRecipe = useRecipeStore((state) => state.addRecipe);
@@ -8,6 +8,7 @@ const AddRecipeForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (title.trim() === "" || description.trim() === "") return; // Simple validation
     addRecipe({ id: Date.now(), title, description });
     setTitle("");
     setDescription("");

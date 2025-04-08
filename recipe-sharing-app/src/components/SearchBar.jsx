@@ -1,21 +1,25 @@
-import useRecipeStore from "./recipeStore.js";
+import React from "react";
+import useRecipeStore from "../stores/recipeStore";
 
 const SearchBar = () => {
-  const { searchQuery, setSearchQuery } = useRecipeStore();
+  const setSearchTerm = useRecipeStore((state) => state.setSearchTerm);
 
   return (
-    <input
-      type="text"
-      placeholder="Search recipes..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      style={{
-        width: "100%",
-        padding: "10px",
-        marginBottom: "20px",
-        fontSize: "16px",
-      }}
-    />
+    <div style={{ marginBottom: "1rem" }}>
+      <input
+        type="text"
+        placeholder="Search recipes..."
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{
+          padding: "10px",
+          width: "100%",
+          maxWidth: "400px",
+          borderRadius: "8px",
+          border: "1px solid #ccc",
+          fontSize: "16px",
+        }}
+      />
+    </div>
   );
 };
 
