@@ -1,20 +1,14 @@
-import React from "react";
-import useRecipeStore from "../store/recipeStore";
+import useRecipeStore from "./recipeStore";
 
 const SearchBar = () => {
-  const { setSearchTerm, filterRecipes } = useRecipeStore();
-
-  const handleChange = (e) => {
-    setSearchTerm(e.target.value);
-    filterRecipes(); // Make sure to trigger filtering every time user types
-  };
+  const setSearchTerm = useRecipeStore((state) => state.setSearchTerm);
 
   return (
     <input
       type="text"
       placeholder="Search recipes..."
-      onChange={handleChange}
-      className="p-2 border rounded w-full mb-4"
+      onChange={(e) => setSearchTerm(e.target.value)}
+      style={{ marginBottom: "20px", padding: "8px", width: "100%" }}
     />
   );
 };
