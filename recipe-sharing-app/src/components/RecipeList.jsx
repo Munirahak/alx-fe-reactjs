@@ -1,34 +1,18 @@
 import React from "react";
-import useRecipeStore from "../stores/recipeStore";
-import SearchBar from "./SearchBar";
+import useRecipeStore from "../store/recipeStore";
+import RecipeCard from "./RecipeCard";
 
 const RecipeList = () => {
-  const filteredRecipes = useRecipeStore((state) => state.filteredRecipes);
+  const { filteredRecipes } = useRecipeStore();
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>Recipes</h1>
-      <SearchBar />
-
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {filteredRecipes.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {filteredRecipes.map((recipe) => (
-            <li
-              key={recipe.id}
-              style={{
-                marginBottom: "1rem",
-                padding: "1rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-              }}
-            >
-              <h2>{recipe.title}</h2>
-              <p>{recipe.description}</p>
-            </li>
-          ))}
-        </ul>
+        filteredRecipes.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))
       ) : (
-        <p>No recipes found. Try a different search term!</p>
+        <p>No recipes found.</p>
       )}
     </div>
   );
