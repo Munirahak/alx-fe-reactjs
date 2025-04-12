@@ -1,90 +1,88 @@
-import { useState } from "react";
-import { fetchUserData } from "../services/githubService";
+// src/components/Search.jsx
+import { useState } from 'react';
+import { fetchUsers } from '../services/githubService';
 
 function Search() {
-  const [username, setUsername] = useState("");
-  const [userData, setUserData] = useState(null);
+  const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleInputChange = (e) => {
-    setUsername(e.target.value);
-  };
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username) return;
-
     setLoading(true);
-    setError(null);
-    setUserData(null);
+    setError(false);
 
     try {
-      const data = await fetchUserData(username);
-      setUserData(data);
+      const data = await fetchUsers({ username, location, minRepos });
+      setUsers(data.items);
     } catch (err) {
-      setError("Looks like we can't find the user");
+      console.error(err);
+      setError(true);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-8 p-4 bg-white rounded-lg shadow-md">
+    <div className="max-w-4xl mx-auto p-6">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col md:flex-row gap-4 p-4"
+        className="flex flex-col md:flex-row items-center gap-4 mb-8"
       >
         <input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="input-style"
+          className="border p-2 rounded w-full md:w-1/3"
         />
         <input
           type="text"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="input-style"
+          className="border p-2 rounded w-full md:w-1/3"
         />
         <input
           type="number"
-          placeholder="Minimum Repositories"
+          placeholder="Min Repositories"
           value={minRepos}
           onChange={(e) => setMinRepos(e.target.value)}
-          className="input-style"
+          className="border p-2 rounded w-full md:w-1/3"
         />
-        <button type="submit" className="btn-style">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded w-full md:w-auto hover:bg-blue-600"
+        >
           Search
         </button>
       </form>
 
-      {/* Conditional rendering based on API state */}
-      <div className="mt-6">
-        {loading && <p>Loading...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-        {userData && (
-          <div className="flex flex-col items-center mt-4">
+      {loading && <p className="text-center">Loading...</p>}
+      {error && <p className="text-center text-red-500">Looks like we can't find the user</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {users.map((user) => (
+          <div key={user.id} className="border p-4 rounded shadow-md">
             <img
-              src={userData.avatar_url}
-              alt={userData.login}
-              className="w-24 h-24 rounded-full mb-2"
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-20 h-20 rounded-full mx-auto"
             />
-            <h2 className="text-xl font-semibold">
-              {userData.name || userData.login}
-            </h2>
+            <h2 className="text-center mt-2 font-semibold">{user.login}</h2>
             <a
-              href={userData.html_url}
+              href={user.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 mt-2"
+              className="block text-center text-blue-500 mt-2"
             >
               View Profile
             </a>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
